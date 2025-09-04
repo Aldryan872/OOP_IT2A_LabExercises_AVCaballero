@@ -5,9 +5,9 @@ import java.util.stream.*;
 /**
  * A utility class demonstrating functional programming patterns in Java
  * 
- * @author GitHubUser
+ * @author Aldryan Venth Caballero 
  * @version 1.0
- * @since 2024
+ * @since 2025
  */
 public class FunctionalUtils {
 
