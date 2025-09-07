@@ -1,52 +1,59 @@
-import java.util.List;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.Objects;
 
-/**
- * Declarative GitHub-style Java example demonstrating:
- * - Stream processing
- * - Optional error handling
- * - Immutable data structures
- * - Lambda expressions
- */
-public class GitHubStyleDeclarative {
-
-    record Repository(String name, int stars, boolean isPublic) {}
-    record Contributor(String name, int commits) {}
-
-    public static void main(String[] args) {
-        // Declarative data initialization
-        List<Repository> repositories = List.of(
-            new Repository("ai-project", 128, true),
-            new Repository("core-library", 342, false),
-            new Repository("learning-spring", 89, true)
-        );
-
-        List<Contributor> contributors = List.of(
-            new Contributor("octocat", 42),
-            new Contributor("torvalds", 189),
-            new Contributor("alice", 76)
-        );
-
-        // Declarative processing pipeline (GitHub-style star filtering)
-        repositories.stream()
-            .filter(repo -> repo.stars() > 100)
-            .filter(Repository::isPublic)
-            .map(Repository::name)
-            .map(String::toUpperCase)
-            .forEach(System.out::println);
-
-        // Declarative error handling with Optional
-        findContributorWithMoreThan100Commits(contributors)
-            .ifPresentOrElse(
-                contributor -> System.out.println("Found: " + contributor.name()),
-                () -> System.out.println("No heavy contributors found")
-            );
+public record BankAccount(String accountNumber, String ownerName, BigDecimal balance) {
+    
+    public BankAccount {
+        Objects.requireNonNull(accountNumber, "Account number cannot be null");
+        Objects.requireNonNull(ownerName, "Owner name cannot be null");
+        Objects.requireNonNull(balance, "Balance cannot be null");
+        
+        if (balance.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Balance cannot be negative");
+        }
     }
+    
+    public BankAccount deposit(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Deposit amount must be positive");
+        }
+        return new BankAccount(accountNumber, ownerName, balance.add(amount));
+    }
+    
+    public BankAccount withdraw(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Withdrawal amount must be positive");
+        }
+        if (balance.compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Insufficient funds");
+        }
+        return new BankAccount(accountNumber, ownerName, balance.subtract(amount));
+    }
+    
+    public boolean hasSufficientFunds(BigDecimal amount) {
+        return balance.compareTo(amount) >= 0;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("Account: %s, Owner: %s, Balance: $%.2f", 
+                           accountNumber, ownerName, balance);
+    }
+}
 
-    // Declarative search with Optional
-    private static Optional<Contributor> findContributorWithMoreThan100Commits(List<Contributor> contributors) {
-        return contributors.stream()
-            .filter(contributor -> contributor.commits() > 100)
-            .findFirst();
+// Example usage
+public class Main {
+    public static void main(String[] args) {
+        // Create account with initial balance
+        BankAccount account = new BankAccount("123456", "John Doe", new BigDecimal("1000.00"));
+        
+        // Perform operations (immutable - returns new instances)
+        BankAccount afterDeposit = account.deposit(new BigDecimal("500.00"));
+        BankAccount afterWithdrawal = afterDeposit.withdraw(new BigDecimal("200.00"));
+        
+        System.out.println("Original: " + account);
+        System.out.println("After deposit: " + afterDeposit);
+        System.out.println("After withdrawal: " + afterWithdrawal);
+        System.out.println("Can withdraw $300? " + afterWithdrawal.hasSufficientFunds(new BigDecimal("300.00")));
     }
 }
