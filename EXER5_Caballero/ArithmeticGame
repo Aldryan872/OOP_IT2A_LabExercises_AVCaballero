@@ -1,1 +1,437 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Random;
 
+/**
+ * ArithmeticApp is a simple math practice application built using Java Swing,
+ * based on the provided sketch.
+ * It generates random arithmetic problems and checks the user's answers.
+ */
+public class ArithmeticApp extends JFrame {
+
+    // --- Core Model Variables ---
+    private int num1, num2;
+    private String operator;
+    private double correctAnswer;
+    private int difficultyLevel = 1; // 1: Easy (0-10), 2: Medium (10-50), 3: Hard (50-200)
+    private int correctCount = 0;
+    private int incorrectCount = 0;
+
+    // --- GUI Components ---
+    private JLabel num1Label, operatorLabel, num2Label, equalsLabel;
+    private JTextField answerField;
+    private JLabel feedbackLabel;
+    // Score labels are now split into text and value
+    private JLabel correctValueLabel, incorrectValueLabel;
+    private JButton submitButton;
+    private JButton continueButton;
+    private JButton exitButton;
+    private JPanel buttonsPanel; // To hold different button states
+    private JLabel[] levelLabels; // To manage level selection labels
+    private JLabel[] operationLabels; // To manage operation selection labels
+
+    private final Random random = new Random();
+
+    /**
+     * Constructor sets up the main application frame and UI.
+     */
+    public ArithmeticApp() {
+        // Set up the main window (JFrame)
+        setTitle("Arithmetic Course");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Use a clean layout for the main structure
+        setLayout(new BorderLayout(10, 10));
+
+        // Initialize UI components
+        initComponents();
+
+        // Generate the first problem
+        generateNewProblem();
+
+        // Final window settings
+        pack(); // Adjusts size to fit components
+        setLocationRelativeTo(null); // Center the window
+        setVisible(true);
+    }
+
+    /**
+     * Initializes all GUI components and sets up the layout.
+     */
+    private void initComponents() {
+        // --- 1. Problem Panel (Top/Center) ---
+        JPanel equationPanel = new JPanel(new BorderLayout());
+        JPanel equationComponentsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 15));
+
+        // Components for the math problem display (like 53 + 12 = ?)
+        num1Label = new JLabel("?");
+        operatorLabel = new JLabel("+");
+        num2Label = new JLabel("?");
+        equalsLabel = new JLabel("=");
+        answerField = new JTextField(5); // Text field for user input (like 32 in the sketch)
+        
+        // Style the labels and text field (using basic colors and fonts for aesthetic)
+        Font problemFont = new Font("SansSerif", Font.BOLD, 24);
+        num1Label.setFont(problemFont);
+        operatorLabel.setFont(problemFont);
+        num2Label.setFont(problemFont);
+        equalsLabel.setFont(problemFont);
+        answerField.setFont(problemFont);
+        answerField.setHorizontalAlignment(JTextField.CENTER);
+        
+        // --- Make Labels look like Text Boxes ---
+        // Get the border from the text field to apply to labels
+        javax.swing.border.Border boxBorder = answerField.getBorder();
+        Dimension boxSize = answerField.getPreferredSize();
+
+        // Apply border, size, and alignment to all labels in the equation
+        JLabel[] problemLabels = {num1Label, operatorLabel, num2Label, equalsLabel};
+        for (JLabel label : problemLabels) {
+            label.setBorder(boxBorder);
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            label.setPreferredSize(boxSize);
+        }
+
+        // Add components to the problem panel
+        equationComponentsPanel.add(num1Label);
+        equationComponentsPanel.add(operatorLabel);
+        equationComponentsPanel.add(num2Label);
+        equationComponentsPanel.add(equalsLabel);
+        equationComponentsPanel.add(answerField);
+        
+        submitButton = new JButton("Submit");
+        equationComponentsPanel.add(submitButton);
+
+        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        continueButton = new JButton("Continue");
+        buttonsPanel.add(continueButton);
+        exitButton = new JButton("Exit");
+        buttonsPanel.add(exitButton);
+
+        equationPanel.add(equationComponentsPanel, BorderLayout.CENTER);
+
+        JPanel problemAreaPanel = new JPanel(new BorderLayout());
+        problemAreaPanel.add(equationPanel, BorderLayout.CENTER);
+        
+
+
+        // --- 2. Feedback Panel (Below Problem) ---
+        feedbackLabel = new JLabel("Ready to start!", SwingConstants.CENTER);
+        feedbackLabel.setFont(new Font("SansSerif", Font.ITALIC, 16));
+        feedbackLabel.setPreferredSize(new Dimension(getWidth(), 30));
+
+        // --- Score Panel (Below Feedback) ---
+        // Use GridBagLayout on the outer panel to center the contents without stretching
+        JPanel scorePanel = new JPanel(new GridBagLayout());
+        scorePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding around the panel
+        Font scoreFont = new Font("SansSerif", Font.BOLD, 14);
+        javax.swing.border.Border scoreBorder = BorderFactory.createEtchedBorder();
+        Dimension scoreBoxSize = new Dimension(35, 25);
+
+        // Correct Score Display (Text + Boxed Value)
+        JPanel correctScorePanel = new JPanel(new BorderLayout(0, 2)); // Use BorderLayout for vertical stacking
+        JLabel correctTextLabel = new JLabel("Correct:");
+        correctTextLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        correctTextLabel.setForeground(new Color(34, 139, 34));
+        correctTextLabel.setFont(scoreFont);
+        correctValueLabel = new JLabel("0", SwingConstants.CENTER);
+        correctValueLabel.setFont(scoreFont);
+        correctValueLabel.setBorder(scoreBorder);
+        correctValueLabel.setPreferredSize(scoreBoxSize);
+        correctScorePanel.add(correctValueLabel, BorderLayout.CENTER);
+        correctScorePanel.add(correctTextLabel, BorderLayout.SOUTH);
+
+        // Incorrect Score Display (Text + Boxed Value)
+        JPanel incorrectScorePanel = new JPanel(new BorderLayout(0, 2)); // Use BorderLayout for vertical stacking
+        JLabel incorrectTextLabel = new JLabel("Incorrect:");
+        incorrectTextLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        incorrectTextLabel.setForeground(new Color(220, 20, 60));
+        incorrectTextLabel.setFont(scoreFont);
+        incorrectValueLabel = new JLabel("0", SwingConstants.CENTER);
+        incorrectValueLabel.setFont(scoreFont);
+        incorrectValueLabel.setBorder(scoreBorder);
+        incorrectValueLabel.setPreferredSize(scoreBoxSize);
+        incorrectScorePanel.add(incorrectValueLabel, BorderLayout.CENTER);
+        incorrectScorePanel.add(incorrectTextLabel, BorderLayout.SOUTH);
+
+        // Create an inner container to hold the score boxes together
+        JPanel scoresContainer = new JPanel();
+        scoresContainer.setLayout(new BoxLayout(scoresContainer, BoxLayout.X_AXIS));
+        scoresContainer.add(correctScorePanel);
+        scoresContainer.add(Box.createHorizontalStrut(20)); // Space between score boxes
+        scoresContainer.add(incorrectScorePanel);
+
+        scorePanel.add(scoresContainer); // Add the container to the centering panel
+
+        // --- 3. Settings Panel (Left/Bottom) ---
+        JPanel settingsPanel = new JPanel();
+        // Use a FlowLayout to place setting groups side-by-side
+        settingsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 5));
+        settingsPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEtchedBorder(),
+            BorderFactory.createEmptyBorder(5, 5, 5, 5))); // Padding: top, left, bottom, right
+        
+        // --- Operation Panel ---
+        JPanel operationPanel = new JPanel();
+        operationPanel.setLayout(new BoxLayout(operationPanel, BoxLayout.Y_AXIS));
+        operationPanel.add(new JLabel("Operation:"));
+
+        operationLabels = new JLabel[4];
+        operationLabels[0] = new JLabel("a. Addition (+)");
+        operationLabels[1] = new JLabel("b. Subtraction (-)");
+        operationLabels[2] = new JLabel("c. Multiplication (x)");
+        operationLabels[3] = new JLabel("d. Division (/)");
+
+        String[] opSymbols = {"+", "-", "*", "/"};
+
+        for (int i = 0; i < operationLabels.length; i++) {
+            final String opSymbol = opSymbols[i];
+            JLabel label = operationLabels[i];
+            label.setForeground(Color.BLACK);
+            label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+            label.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    operator = opSymbol;
+                    updateOperationSelectionVisuals();
+                    generateNewProblem();
+                }
+            });
+
+            operationPanel.add(label);
+        }
+        updateOperationSelectionVisuals(); // Set initial visual state
+
+        
+        // --- Level Panel ---
+        JPanel levelPanel = new JPanel();
+        levelPanel.setLayout(new BoxLayout(levelPanel, BoxLayout.Y_AXIS));
+        levelPanel.add(new JLabel("Level:"));
+        
+        // Create three clickable labels for each level
+        levelLabels = new JLabel[3];
+        levelLabels[0] = new JLabel("Level 1 (0-10)");
+        levelLabels[1] = new JLabel("Level 2 (10-50)");
+        levelLabels[2] = new JLabel("Level 3 (50-200)");
+
+        for (int i = 0; i < levelLabels.length; i++) {
+            final int level = i + 1; // Use a final variable for the listener
+            JLabel label = levelLabels[i];
+            label.setForeground(Color.BLACK);
+            label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            
+            label.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    difficultyLevel = level;
+                    updateLevelSelectionVisuals();
+                    generateNewProblem();
+                }
+            });
+            
+            levelPanel.add(label);
+        }
+        updateLevelSelectionVisuals(); // Set the initial visual state
+
+
+        // Add the individual setting panels to the main settings panel
+        settingsPanel.add(operationPanel);
+        settingsPanel.add(levelPanel);
+        
+        // Add the settings panel below the equation area
+        problemAreaPanel.add(settingsPanel, BorderLayout.SOUTH);
+
+        // --- 4. Wire up the Submit Button ---
+        submitButton.addActionListener(e -> checkAnswer());
+
+        // Wire up Continue and Exit buttons
+        continueButton.addActionListener(e -> {
+            generateNewProblem();
+        });
+
+        exitButton.addActionListener(e -> System.exit(0));
+
+        // Also allow pressing Enter in the answer field to submit
+        answerField.addActionListener(e -> {
+            // Only submit if the submit button is visible
+            if (submitButton.isShowing()) checkAnswer();
+        });
+
+        // --- 5. Assemble the Main Frame ---
+        
+        // Container for problem, feedback, and score
+        JPanel mainContent = new JPanel(new BorderLayout());
+        JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.add(feedbackLabel, BorderLayout.NORTH);
+        southPanel.add(buttonsPanel, BorderLayout.CENTER); // Add Continue/Exit buttons below feedback
+        mainContent.add(problemAreaPanel, BorderLayout.CENTER);
+        mainContent.add(southPanel, BorderLayout.SOUTH);
+        
+        // Add components to the JFrame
+        add(mainContent, BorderLayout.CENTER);
+        add(scorePanel, BorderLayout.EAST); // Place score panel on the right
+
+        // Initialize the default operator
+        operator = "+";
+    }
+
+    /**
+     * Updates the visual state of the operation labels to indicate which is selected.
+     * The selected operation is made bold, others are plain.
+     */
+    private void updateOperationSelectionVisuals() {
+        String[] opSymbols = {"+", "-", "*", "/"};
+        for (int i = 0; i < operationLabels.length; i++) {
+            if (opSymbols[i].equals(operator)) {
+                operationLabels[i].setFont(operationLabels[i].getFont().deriveFont(Font.BOLD));
+            } else {
+                operationLabels[i].setFont(operationLabels[i].getFont().deriveFont(Font.PLAIN));
+            }
+        }
+    }
+
+    /**
+     * Updates the visual state of the level labels to indicate which is selected.
+     * The selected level is made bold, others are plain.
+     */
+    private void updateLevelSelectionVisuals() {
+        for (int i = 0; i < levelLabels.length; i++) {
+            if ((i + 1) == difficultyLevel) {
+                levelLabels[i].setFont(levelLabels[i].getFont().deriveFont(Font.BOLD));
+            } else {
+                levelLabels[i].setFont(levelLabels[i].getFont().deriveFont(Font.PLAIN));
+            }
+        }
+    }
+
+    /**
+     * Generates two random numbers and calculates the correct answer based on
+     * the current operator and difficulty level.
+     */
+    private void generateNewProblem() {
+        int range;
+        int minNum;
+        
+        switch (difficultyLevel) {
+            case 1: // Easy: 0-10
+                minNum = 0;
+                range = 10;
+                break;
+            case 2: // Medium: 10-50
+                minNum = 10;
+                range = 40; // Range between 10 and 50
+                break;
+            case 3: // Hard: 50-200
+                minNum = 50;
+                range = 150; // Range between 50 and 200
+                break;
+            default:
+                minNum = 0;
+                range = 10;
+        }
+
+        num1 = random.nextInt(range) + minNum;
+        num2 = random.nextInt(range) + minNum;
+
+        // Ensure division doesn't result in non-integer or division by zero for basic levels
+        if ("/".equals(operator)) {
+            // Prevent division by zero
+            // This loop ensures num2 is never zero, which is only possible in Easy mode.
+            // It correctly re-rolls within the level's specified range.
+            while (num2 == 0) {
+                // Re-roll num2 until it is not zero.
+                num2 = random.nextInt(range) + minNum;
+            }
+            // Ensure whole number result
+            num1 = (num1 / num2) * num2;
+            correctAnswer = (double)num1 / num2;
+        } else if ("-".equals(operator)) {
+             // For subtraction, ensure num1 >= num2 for non-negative result practice
+             if (num1 < num2) {
+                 int temp = num1;
+                 num1 = num2;
+                 num2 = temp;
+             }
+             correctAnswer = num1 - num2;
+        } else if ("*".equals(operator)) {
+            correctAnswer = (double)num1 * num2;
+        } else { // Default to "+"
+            correctAnswer = (double)num1 + num2;
+            operator = "+"; // Reset operator if it was something unexpected
+        }
+
+        // Update the display
+        num1Label.setText(String.valueOf(num1));
+        operatorLabel.setText(operator);
+        num2Label.setText(String.valueOf(num2));
+        feedbackLabel.setText(" "); // Clear the prompt text for a cleaner look
+        answerField.setText(""); // Clear previous answer
+        answerField.requestFocusInWindow(); // Focus the input field
+
+        // Set button visibility for a new problem
+        submitButton.setVisible(true);
+        answerField.setEditable(true);
+    }
+
+    /**
+     * Checks the user's input against the correct answer.
+     */
+    private void checkAnswer() {
+        try {
+            double userAnswer = Double.parseDouble(answerField.getText().trim());
+
+            // Simple comparison, rounded to handle potential float inaccuracies from division
+            if (Math.abs(userAnswer - correctAnswer) < 0.0001) {
+                correctCount++;
+                feedbackLabel.setText("Correct! Well done.");
+                feedbackLabel.setForeground(new Color(34, 139, 34)); // Forest Green
+            } else {
+                incorrectCount++;
+                feedbackLabel.setText("Incorrect. The answer was " + formatAnswer(correctAnswer));
+                feedbackLabel.setForeground(new Color(220, 20, 60)); // Crimson Red
+            }
+
+        } catch (NumberFormatException ex) {
+            incorrectCount++;
+            feedbackLabel.setText("Please enter a valid number.");
+            feedbackLabel.setForeground(Color.ORANGE);
+        }
+        updateScoreDisplay();
+
+        // Set button visibility for after an answer is given
+        submitButton.setVisible(false);
+        answerField.setEditable(false);
+    }
+
+    /**
+     * Updates the score labels with the current counts.
+     */
+    private void updateScoreDisplay() {
+        correctValueLabel.setText(String.valueOf(correctCount));
+        incorrectValueLabel.setText(String.valueOf(incorrectCount));
+    }
+
+    /**
+     * Formats the answer for display. If it's a whole number, show as an integer.
+     * Otherwise, show as a double with up to 4 decimal places.
+     * @param number The number to format.
+     * @return A formatted string representation of the number.
+     */
+    private String formatAnswer(double number) {
+        // Check if the number is effectively an integer
+        if (number == (long) number) {
+            return String.format("%d", (long) number);
+        } else {
+            return String.format("%.4f", number).replaceAll("0*$", "").replaceAll("\\.$", "");
+        }
+    }
+    /**
+     * Main method to run the application.
+     */
+    public static void main(String[] args) {
+        // Schedule a job for the event-dispatching thread
+        SwingUtilities.invokeLater(() -> {
+            new ArithmeticApp();
+        });
+    }
+}
