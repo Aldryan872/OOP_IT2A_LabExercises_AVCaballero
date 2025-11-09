@@ -28,7 +28,6 @@ public class ArithmeticApp extends JFrame {
     private JButton submitButton;
     private JButton continueButton;
     private JButton exitButton;
-    private JPanel buttonsPanel; // To hold different button states
     private JLabel[] levelLabels; // To manage level selection labels
     private JLabel[] operationLabels; // To manage operation selection labels
 
@@ -103,12 +102,6 @@ public class ArithmeticApp extends JFrame {
         submitButton = new JButton("Submit");
         equationComponentsPanel.add(submitButton);
 
-        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        continueButton = new JButton("Continue");
-        buttonsPanel.add(continueButton);
-        exitButton = new JButton("Exit");
-        buttonsPanel.add(exitButton);
-
         equationPanel.add(equationComponentsPanel, BorderLayout.CENTER);
 
         JPanel problemAreaPanel = new JPanel(new BorderLayout());
@@ -158,20 +151,19 @@ public class ArithmeticApp extends JFrame {
         // Create an inner container to hold the score boxes together
         JPanel scoresContainer = new JPanel();
         scoresContainer.setLayout(new BoxLayout(scoresContainer, BoxLayout.X_AXIS));
+        scoresContainer.add(Box.createHorizontalGlue());
         scoresContainer.add(correctScorePanel);
         scoresContainer.add(Box.createHorizontalStrut(20)); // Space between score boxes
         scoresContainer.add(incorrectScorePanel);
+        scoresContainer.add(Box.createHorizontalGlue());
 
         scorePanel.add(scoresContainer); // Add the container to the centering panel
 
-        // --- 3. Settings Panel (Left/Bottom) ---
+        // --- 3. Settings Panel (Left) ---
         JPanel settingsPanel = new JPanel();
         // Use a FlowLayout to place setting groups side-by-side
         settingsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 5));
-        settingsPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createEtchedBorder(),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5))); // Padding: top, left, bottom, right
-        
+
         // --- Operation Panel ---
         JPanel operationPanel = new JPanel();
         operationPanel.setLayout(new BoxLayout(operationPanel, BoxLayout.Y_AXIS));
@@ -233,16 +225,16 @@ public class ArithmeticApp extends JFrame {
         }
         updateLevelSelectionVisuals(); // Set the initial visual state
 
-
         // Add the individual setting panels to the main settings panel
         settingsPanel.add(operationPanel);
         settingsPanel.add(levelPanel);
-        
-        // Add the settings panel below the equation area
-        problemAreaPanel.add(settingsPanel, BorderLayout.SOUTH);
 
         // --- 4. Wire up the Submit Button ---
         submitButton.addActionListener(e -> checkAnswer());
+
+        // Create and wire up Continue and Exit buttons
+        continueButton = new JButton("Continue");
+        exitButton = new JButton("Exit");
 
         // Wire up Continue and Exit buttons
         continueButton.addActionListener(e -> {
@@ -261,9 +253,16 @@ public class ArithmeticApp extends JFrame {
         
         // Container for problem, feedback, and score
         JPanel mainContent = new JPanel(new BorderLayout());
+
+        // Create a new bottom panel to hold settings and buttons side-by-side
+        JPanel bottomControlsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
+        bottomControlsPanel.add(settingsPanel);
+        bottomControlsPanel.add(continueButton);
+        bottomControlsPanel.add(exitButton);
+
         JPanel southPanel = new JPanel(new BorderLayout());
         southPanel.add(feedbackLabel, BorderLayout.NORTH);
-        southPanel.add(buttonsPanel, BorderLayout.CENTER); // Add Continue/Exit buttons below feedback
+        southPanel.add(bottomControlsPanel, BorderLayout.CENTER);
         mainContent.add(problemAreaPanel, BorderLayout.CENTER);
         mainContent.add(southPanel, BorderLayout.SOUTH);
         
