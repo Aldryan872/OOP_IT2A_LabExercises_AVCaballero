@@ -47,7 +47,7 @@ public class ArithmeticApp extends JFrame {
         equalsLabel = new JLabel("=");
         answerField = new JTextField(5);
         
-        Font problemFont = new Font("SansSerif", Font.BOLD, 24);
+        Font problemFont = new Font("SansSerif", Font.BOLD, 48);
         num1Label.setFont(problemFont);
         operatorLabel.setFont(problemFont);
         num2Label.setFont(problemFont);
@@ -57,10 +57,16 @@ public class ArithmeticApp extends JFrame {
         
         javax.swing.border.Border boxBorder = answerField.getBorder();
         Dimension preferredSize = answerField.getPreferredSize();
-        Dimension boxSize = new Dimension(preferredSize.height, preferredSize.height);
+        Dimension boxSize = new Dimension(preferredSize.height + 40, preferredSize.height + 40);
 
         num1Label.setBorder(boxBorder);
         num2Label.setBorder(boxBorder);
+        num1Label.setBackground(Color.WHITE);
+        num2Label.setBackground(Color.WHITE);
+        num1Label.setOpaque(true);
+        num2Label.setOpaque(true);
+        num1Label.setHorizontalAlignment(SwingConstants.CENTER);
+        num2Label.setHorizontalAlignment(SwingConstants.CENTER);
 
         num1Label.setPreferredSize(boxSize);
         num2Label.setPreferredSize(boxSize);
@@ -69,6 +75,7 @@ public class ArithmeticApp extends JFrame {
         operatorLabel.setHorizontalAlignment(SwingConstants.CENTER);
         equalsLabel.setHorizontalAlignment(SwingConstants.CENTER);
         answerField.setPreferredSize(boxSize);
+        answerField.setBackground(Color.WHITE);
 
         equationComponentsPanel.add(num1Label);
         equationComponentsPanel.add(operatorLabel);
@@ -177,9 +184,13 @@ public class ArithmeticApp extends JFrame {
             levelPanel.add(levelButton);
         }
 
-        settingsPanel.add(levelPanel);
-        settingsPanel.add(Box.createVerticalStrut(20));
-        settingsPanel.add(operationPanel);
+        JPanel horizontalPanel = new JPanel();
+        horizontalPanel.setLayout(new BoxLayout(horizontalPanel, BoxLayout.X_AXIS));
+        horizontalPanel.add(operationPanel);
+        horizontalPanel.add(Box.createHorizontalStrut(20));
+        horizontalPanel.add(levelPanel);
+
+        settingsPanel.add(horizontalPanel);
 
         answerField.addActionListener(e -> {
             if (submitButton.isShowing()) checkAnswer();
@@ -192,7 +203,7 @@ public class ArithmeticApp extends JFrame {
         
         add(mainContent, BorderLayout.CENTER);
         add(scorePanel, BorderLayout.EAST);
-        add(settingsPanel, BorderLayout.WEST);
+        add(settingsPanel, BorderLayout.SOUTH);
 
         JPanel actionButtonPanel = new JPanel(new GridLayout(3, 1, 0, 5));
         submitButton = new JButton("Submit");
@@ -203,7 +214,8 @@ public class ArithmeticApp extends JFrame {
         actionButtonPanel.add(exitButton);
         equationComponentsPanel.add(actionButtonPanel);
         
-        JPanel bottomControlsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
+        JPanel bottomControlsPanel = new JPanel(new BorderLayout());
+        bottomControlsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         southPanel.add(feedbackLabel, BorderLayout.NORTH);
         southPanel.add(bottomControlsPanel, BorderLayout.CENTER);
@@ -310,7 +322,6 @@ public class ArithmeticApp extends JFrame {
         }
         updateScoreDisplay();
         feedbackLabel.setText(" ");
-        submitButton.setVisible(false);
         answerField.setEditable(false);
     }
 
