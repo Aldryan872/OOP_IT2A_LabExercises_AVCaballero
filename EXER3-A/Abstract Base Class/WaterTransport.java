@@ -1,16 +1,11 @@
-public abstract class WaterTransport extends Transportation {
-    protected double displacement;
-
-    public WaterTransport(String name, int maxSpeed, int capacity, double displacement) {
-        super(name, maxSpeed, capacity);
-        this.displacement = displacement;
+// WaterTransport.java
+public class WaterTransport extends Transportation {
+    public WaterTransport(String name, int capacity) {
+        super(name, capacity);
     }
 
     @Override
-    public void displayInfo() {
-        super.displayInfo();
-        System.out.println("Displacement: " + displacement + " tons");
+    public void move() {
+        System.out.println(getName() + " is sailing on water.");
     }
-
-    public abstract void sail();
 }
