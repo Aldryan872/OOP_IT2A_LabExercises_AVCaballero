@@ -1,16 +1,11 @@
-public abstract class AirTransport extends Transportation {
-    protected int maxAltitude;
-
-    public AirTransport(String name, int maxSpeed, int capacity, int maxAltitude) {
-        super(name, maxSpeed, capacity);
-        this.maxAltitude = maxAltitude;
+// AirTransport.java
+public class AirTransport extends Transportation {
+    public AirTransport(String name, int capacity) {
+        super(name, capacity);
     }
 
     @Override
-    public void displayInfo() {
-        super.displayInfo();
-        System.out.println("Max Altitude: " + maxAltitude + " meters");
+    public void move() {
+        System.out.println(getName() + " is flying in the air.");
     }
-
-    public abstract void takeOff();
 }
