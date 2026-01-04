@@ -1,16 +1,11 @@
-public abstract class LandTransport extends Transportation {
-    protected int wheelCount;
-
-    public LandTransport(String name, int maxSpeed, int capacity, int wheelCount) {
-        super(name, maxSpeed, capacity);
-        this.wheelCount = wheelCount;
+// LandTransport.java
+public class LandTransport extends Transportation {
+    public LandTransport(String name, int capacity) {
+        super(name, capacity);
     }
 
     @Override
-    public void displayInfo() {
-        super.displayInfo();
-        System.out.println("Wheel Count: " + wheelCount);
+    public void move() {
+        System.out.println(getName() + " is driving on land.");
     }
-
-    public abstract void drive();
 }
