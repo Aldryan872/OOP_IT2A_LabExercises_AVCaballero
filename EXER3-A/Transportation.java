@@ -1,23 +1,34 @@
-public abstract class Transportation {
-    protected String name;
-    protected int maxSpeed;
-    protected int capacity;
+// TransportationTester.java
+public class TransportationTester {
+    public static void main(String[] args) {
+        // Air Transport
+        Helicopter helicopter = new Helicopter(5);
+        Airplane airplane = new Airplane(150);
+        SpaceShuttle shuttle = new SpaceShuttle(7);
 
-    public Transportation(String name, int maxSpeed, int capacity) {
-        this.name = name;
-        this.maxSpeed = maxSpeed;
-        this.capacity = capacity;
-    }
+        // Land Transport
+        Truck truck = new Truck(3);
+        SUV suv = new SUV(7);
+        Tricycle tricycle = new Tricycle(2);
+        Motorcycle motorcycle = new Motorcycle(2);
+        Kariton kariton = new Kariton(1);
 
-    public abstract void move();
+        // Water Transport
+        Boat boat = new Boat(20);
+        Submarine submarine = new Submarine(30);
 
-    public void displayInfo() {
-        System.out.println("Name: " + name);
-        System.out.println("Max Speed: " + maxSpeed + " km/h");
-        System.out.println("Capacity: " + capacity + " people");
-    }
+        // Testing move() method
+        helicopter.move();
+        airplane.move();
+        shuttle.move();
 
-    public String getName() {
-        return name;
+        truck.move();
+        suv.move();
+        tricycle.move();
+        motorcycle.move();
+        kariton.move();
+
+        boat.move();
+        submarine.move();
     }
 }
