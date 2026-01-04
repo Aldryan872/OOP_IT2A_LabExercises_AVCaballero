@@ -1,35 +1,48 @@
+package car;
+
 public class Car {
+    private String brand;
     private String color;
     private String plateNo;
     private String chassisNo;
+    private String fuelType;
+    private int maxSpeed;
+    private int year;
+    private double price;
 
-    // no argument constructor
     public Car() {
-        this.color = "No color";
-        this.plateNo = "No PlateNumber";
-        this.chassisNo = "No Chassis No Yet!";
+        this.brand = "Unknown Brand";
+        this.color = "No Color";
+        this.plateNo = "No Plate Number";
+        this.chassisNo = "No Chassis Number Yet!";
+        this.fuelType = "Unknown Fuel";
+        this.maxSpeed = 0;
+        this.year = 0;
+        this.price = 0.0;
     }
-    
-    public Car(String color, String plateNo, String chassisNo) {
+
+    public Car(String brand, String color, String plateNo, String chassisNo, 
+               String fuelType, int maxSpeed, int year, double price) {
+        this.brand = brand;
         this.color = color;
         this.plateNo = plateNo;
         this.chassisNo = chassisNo;
+        this.fuelType = fuelType;
+        this.maxSpeed = maxSpeed;
+        this.year = year;
+        this.price = price;
     }
 
-    //-------------------methods------------------
     public void displayInfo() {
         String info = "";
-        info += "Color: " + this.color;
-        info += "\nPlateNo: " + this.plateNo;
-        info += "\nChassisNo: " + this.chassisNo;
+        info += "Brand: " + this.brand;
+        info += "\nColor: " + this.color;
+        info += "\nPlate No: " + this.plateNo;
+        info += "\nChassis No: " + this.chassisNo;
+        info += "\nFuel Type: " + this.fuelType;
+        info += "\nMax Speed: " + this.maxSpeed + " km/h";
+        info += "\nYear: " + this.year;
+        info += "\nPrice: $" + this.price;
         System.out.println(info);
     }
-    
-    // Getters and setters (optional but recommended)
-    public String getColor() { return color; }
-    public void setColor(String color) { this.color = color; }
-    public String getPlateNo() { return plateNo; }
-    public void setPlateNo(String plateNo) { this.plateNo = plateNo; }
-    public String getChassisNo() { return chassisNo; }
-    public void setChassisNo(String chassisNo) { this.chassisNo = chassisNo; }
 }
