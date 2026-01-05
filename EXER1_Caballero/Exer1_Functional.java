@@ -10,6 +10,7 @@ public class FunctionalExample {
                         .map(n -> n * n)         // square them
                         .sum();
 
-        System.out.println("Sum of squares of odd numbers = " + sum);
+        System.out.println("Sum of squares of odd numbers = " + sumOdd);
+        System.out.println("Sum of squares of even numbers = " + sumEven);
     }
 }
