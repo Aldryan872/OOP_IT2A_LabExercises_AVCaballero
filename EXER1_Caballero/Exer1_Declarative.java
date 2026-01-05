@@ -1,12 +1,13 @@
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class EXER1_Declarative {
+public class Exer1_Declarative {
     public static void main(String[] args) {
-        List<String> names = List.of("Aldryan", "Robert", "Rodrigo");
+        List<String> names = List.of("Aldryan", "Robert", "Alice", "Bob", "Charlie", "David", "Eve", "Frank");
+        List<String> filteredNames = names.stream()
+             .filter(name -> name.charAt(0) >= 'A' && name.charAt(0) <= 'F')
+             .collect(Collectors.toList());
 
-        // declarative: say what we want, not how
-        names.stream()
-             .filter(name -> name.startsWith("A"))
-             .forEach(System.out::println);
+        filteredNames.forEach(System.out::println);
     }
 }
