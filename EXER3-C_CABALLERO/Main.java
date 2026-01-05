@@ -24,7 +24,7 @@ public class Main {
     public static void main(String[] args) {
         Person p = new Person();
 
-        p.setName("Leandro");
+        p.setName("Aldryan");
         p.setAge(20);
 
         System.out.println("Name: " + p.getName());
