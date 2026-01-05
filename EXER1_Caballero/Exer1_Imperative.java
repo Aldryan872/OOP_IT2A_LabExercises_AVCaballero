@@ -4,7 +4,6 @@ public class Imperative {
         int sum = 0;
         int product = 1;
 
-        // step-by-step instructions
         for (int num : numbers) {
             sum += num;
             product *= num;
