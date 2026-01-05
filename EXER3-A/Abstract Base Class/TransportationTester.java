@@ -1,4 +1,7 @@
 // TransportationTester.java
+import java.util.ArrayList;
+import java.util.List;
+
 public class TransportationTester {
     public static void main(String[] args) {
         // Air Transport
@@ -17,18 +20,22 @@ public class TransportationTester {
         Boat boat = new Boat(20);
         Submarine submarine = new Submarine(30);
 
-        // Testing move() method
-        helicopter.move();
-        airplane.move();
-        shuttle.move();
+        // Create a list to hold all transportation objects
+        List<Transportation> transports = new ArrayList<>();
+        transports.add(helicopter);
+        transports.add(airplane);
+        transports.add(shuttle);
+        transports.add(truck);
+        transports.add(suv);
+        transports.add(tricycle);
+        transports.add(motorcycle);
+        transports.add(kariton);
+        transports.add(boat);
+        transports.add(submarine);
 
-        truck.move();
-        suv.move();
-        tricycle.move();
-        motorcycle.move();
-        kariton.move();
-
-        boat.move();
-        submarine.move();
+        // Testing move() method using a loop
+        for (Transportation t : transports) {
+            t.move();
+        }
     }
 }
